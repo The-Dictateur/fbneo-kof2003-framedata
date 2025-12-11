@@ -2,4 +2,5 @@
 addons_run = {
 	"missions.lua",
 	"rewind.lua",
+	"framedata.lua",
 }

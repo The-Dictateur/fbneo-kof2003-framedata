@@ -263,6 +263,8 @@ end
 ----------------------------------------------
 -- ROM NAME
 ----------------------------------------------
+--- DETERMINE THE GAME'S DIRECTORY NAME
+--- -------------------------------------------
 dirname = ""
 for i, v in pairs(games) do
 	for _, k in ipairs(v) do
