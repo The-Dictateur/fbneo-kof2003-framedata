@@ -12,6 +12,12 @@ local p2char_a = 0x107d1b
 local p1char = 1
 local p2char = 1
 
+-- Variables para medir startup
+local startup_frames = 0
+local measuring_startup = false
+local was_in_hitstun = false
+local prev_start = false
+
 local p1health = {0x2FE91D, 0x2FEA1D, 0x2FEB1D}
 local p2health = {0x2FED1D, 0x2FEE1D, 0x2FEF1D}
 
@@ -127,4 +133,31 @@ function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
+	
+	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
+	local inputs = joypad.get()
+	local any_button = inputs["P1 Button A"] or inputs["P1 Button B"] or inputs["P1 Button C"] or inputs["P1 Button D"]
+	if any_button and not prev_start then
+		print("Button detected, starting measurement")
+		startStartupMeasurement()
+	end
+	prev_start = any_button
+	
+	-- Medición de startup
+	if measuring_startup then
+		startup_frames = startup_frames + 1
+		if playerTwoInHitstun() and not was_in_hitstun then
+			startup_frames = startup_frames - 4
+			print("Startup: " .. startup_frames)
+			measuring_startup = false
+		end
+		was_in_hitstun = playerTwoInHitstun()
+	end
+end
+
+-- Función para iniciar la medición de startup
+function startStartupMeasurement()
+	startup_frames = 0
+	measuring_startup = true
+	was_in_hitstun = playerTwoInHitstun()
 end

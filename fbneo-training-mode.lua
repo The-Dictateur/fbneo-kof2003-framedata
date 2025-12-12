@@ -141,6 +141,9 @@ local games = {
 local usage = function()
 	print ("Beta for fbneo-training-script ("..FBNEO_TRAINING_MODE_VERSION..")")
 	if not REPLAY then
+		print "----------------------------------"
+		print (emu.romname() .. " loaded")
+		print "----------------------------------"
 		print "Replay with 1 coin press"
 		print "Record with 2 coin presses"
 		print "Swap inputs with 3 coin presses"
