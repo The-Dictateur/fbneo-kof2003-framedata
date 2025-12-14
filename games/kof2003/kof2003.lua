@@ -35,7 +35,8 @@ local p1combocounter = 0x2FE80F
 local p2combocounter = 0x2FEC0F
 
 -- Codigo standby IORI P1
-local ioirip1_state_base = 0x1011D7
+local iorip1_state_base = 0x1011D7
+local iorip2_state_base = 0x101C57
 
 -- P2Block
 local p2block = 0x101bdd
@@ -101,14 +102,6 @@ function playerTwoInHitstun()
 	return rb(p1combocounter)~=0
 end
 
-function playerOneIoriStanding()
-	return rb(ioirip1_state_base) == 0
-end
-
-function playerIoriOnePose()
-	return rb(ioirip1_state_base)
-end
-
 function p2Blockstun()
 	return rb(p2block)~=0
 end
@@ -151,11 +144,29 @@ function infiniteTime()
 	ww(0x107D62, 0x6000)
 end
 
+-- Standby functions TESTING
+------------------------------------
+function playerOneIoriStanding()
+	return rb(iorip1_state_base) == 0
+end
+
+function playerOneIoriPose()
+	return rb(iorip1_state_base)
+end
+
+function playerTwoIoriStanding()
+	return rb(iorip2_state_base) == 0
+end
+
+function playerTwoIoriPose()
+	return rb(iorip2_state_base)
+end
+------------------------------------
+
 function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
-	--print(playerIoriOnePose())
 	
 	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
 	local inputs = joypad.get()
@@ -188,7 +199,7 @@ function Run() -- runs every frame
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
 		-- Agachado IORI
-		if playerIoriOnePose() == 5 then
+		if playerOneIoriPose() == 5 then
 			pose5_detected = true
 		end
 		if not playerTwoInHitstun() and playerOneIoriStanding() then
@@ -211,8 +222,12 @@ function Run() -- runs every frame
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
 
-		if playerIoriOnePose() == 122 then
+		if playerOneIoriPose() == 122 then
 			pose122_detected = true
+		end
+
+		if playerOneIoriPose() == 5 then
+			pose5_detected = true
 		end
 
 		if not p2Blockstun() and playerOneIoriStanding() then
@@ -220,7 +235,12 @@ function Run() -- runs every frame
 			if pose122_detected then
 				advantage = advantage - 2
 			end
+			if pose5_detected then
+				advantage = advantage - 2
+			end
 			print("Block Frame Advantage: " .. advantage)
+			pose122_detected = false
+			pose5_detected = false
 			measuring_block_advantage = false
 		end
 	end
