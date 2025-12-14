@@ -34,7 +34,11 @@ local p2direction = {0x101B0F, 0x101E0F, 0x10210F}
 local p1combocounter = 0x2FE80F
 local p2combocounter = 0x2FEC0F
 
-local p1_state_base = 0x1011D7
+-- Codigo standby IORI P1
+local ioirip1_state_base = 0x1011D7
+
+-- P2Block
+local p2block = 0x101bdd
 
 translationtable = {
 	"left",
@@ -98,11 +102,15 @@ function playerTwoInHitstun()
 end
 
 function playerOneIoriStanding()
-	return rb(p1_state_base) == 0
+	return rb(ioirip1_state_base) == 0
 end
 
 function playerIoriOnePose()
-	return rb(p1_state_base)
+	return rb(ioirip1_state_base)
+end
+
+function p2Blockstun()
+	return rb(p2block)~=0
 end
 
 function readPlayerOneHealth()
@@ -147,6 +155,7 @@ function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
+	--print(playerIoriOnePose())
 	
 	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
 	local inputs = joypad.get()
@@ -159,50 +168,60 @@ function Run() -- runs every frame
 
 	-- Detectar entrada en hitstun (hit confirmado)
 	if playerTwoInHitstun() and not was_in_hitstun then
-		print("Hit confirmed, start advantage measurement")
 		measuring_advantage = true
 		p2_hitstun_frames = 0
 		p1_recovery_frames = 0
 	end
 
+	if p2Blockstun() and not was_in_hitstun then
+		measuring_block_advantage = true
+		p2_blockstun_frames = 0
+		p1_recovery_frames = 0
+	end
+	
 
 	if measuring_advantage then
-
-		-- Contar hitstun del P2
 		if playerTwoInHitstun() then
 			p2_hitstun_frames = p2_hitstun_frames + 1
 		end
-
-		-- Contar recovery del P1
 		if not playerOneIoriStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
-
-		-- Detectar si alguna vez la pose es 5
+		-- Agachado IORI
 		if playerIoriOnePose() == 5 then
 			pose5_detected = true
+		end
+		if not playerTwoInHitstun() and playerOneIoriStanding() then
+			local advantage = p2_hitstun_frames - p1_recovery_frames
+			if pose5_detected then
+				advantage = advantage + 5
+			end
+			print("Frame Advantage: " .. advantage)
+			measuring_advantage = false
+			pose5_detected = false
+			pose50_detected = false
+		end
+	end
+
+	if measuring_block_advantage then
+		if p2Blockstun() then
+			p2_blockstun_frames = p2_blockstun_frames + 1
+		end
+		if not playerOneIoriStanding() then
+			p1_recovery_frames = p1_recovery_frames + 1
 		end
 
 		if playerIoriOnePose() == 122 then
 			pose122_detected = true
 		end
 
-		-- Cuando ambos ya han terminado
-		if not playerTwoInHitstun() and playerOneIoriStanding() then
-			local advantage = p2_hitstun_frames - p1_recovery_frames
-
-			-- Aplicar bonus si se detectó pose 5
-			if pose5_detected then
-				advantage = advantage + 6
-			end
-
+		if not p2Blockstun() and playerOneIoriStanding() then
+			local advantage = p2_blockstun_frames - p1_recovery_frames + 1
 			if pose122_detected then
-				advantage = advantage + 1
+				advantage = advantage - 2
 			end
-
-			print("Frame Advantage: " .. advantage)
-			measuring_advantage = false
-			pose5_detected = false  -- resetear para la siguiente medición
+			print("Block Frame Advantage: " .. advantage)
+			measuring_block_advantage = false
 		end
 	end
 	
