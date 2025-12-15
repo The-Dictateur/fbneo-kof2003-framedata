@@ -103,7 +103,8 @@ function playerTwoInHitstun()
 end
 
 function p2Blockstun()
-	return rb(p2block)~=0
+	local state = rb(iorip2_state_base)
+	return state == 11 or state == 12
 end
 
 function readPlayerOneHealth()
@@ -147,7 +148,8 @@ end
 -- Standby functions TESTING
 ------------------------------------
 function playerOneIoriStanding()
-	return rb(iorip1_state_base) == 0
+	local state = rb(iorip1_state_base)
+	return state == 0 or state == 5 or state == 4
 end
 
 function playerOneIoriPose()
@@ -155,7 +157,8 @@ function playerOneIoriPose()
 end
 
 function playerTwoIoriStanding()
-	return rb(iorip2_state_base) == 0
+	local state = rb(iorip2_state_base)
+	return state == 0 or state == 5 or state == 4
 end
 
 function playerTwoIoriPose()
@@ -167,6 +170,7 @@ function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
+
 	
 	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
 	local inputs = joypad.get()
@@ -198,15 +202,8 @@ function Run() -- runs every frame
 		if not playerOneIoriStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
-		-- Agachado IORI
-		if playerOneIoriPose() == 5 then
-			pose5_detected = true
-		end
 		if not playerTwoInHitstun() and playerOneIoriStanding() then
 			local advantage = p2_hitstun_frames - p1_recovery_frames
-			if pose5_detected then
-				advantage = advantage + 5
-			end
 			print("Frame Advantage: " .. advantage)
 			measuring_advantage = false
 			pose5_detected = false
@@ -222,25 +219,10 @@ function Run() -- runs every frame
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
 
-		if playerOneIoriPose() == 122 then
-			pose122_detected = true
-		end
-
-		if playerOneIoriPose() == 5 then
-			pose5_detected = true
-		end
-
 		if not p2Blockstun() and playerOneIoriStanding() then
 			local advantage = p2_blockstun_frames - p1_recovery_frames + 1
-			if pose122_detected then
-				advantage = advantage - 2
-			end
-			if pose5_detected then
-				advantage = advantage - 2
-			end
 			print("Block Frame Advantage: " .. advantage)
-			pose122_detected = false
-			pose5_detected = false
+
 			measuring_block_advantage = false
 		end
 	end
