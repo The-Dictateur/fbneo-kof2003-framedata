@@ -34,8 +34,8 @@ local p2direction = {0x101B0F, 0x101E0F, 0x10210F}
 local p1combocounter = 0x2FE80F
 local p2combocounter = 0x2FEC0F
 
--- Codigo standby IORI P1
-local iorip1_state_base = 0x1011D7
+-- Code standby P1
+local p1_state_base = 0x1011D7
 local p2_state_base = 0x101C57
 
 -- P2Block
@@ -147,21 +147,21 @@ end
 
 -- Standby functions TESTING
 ------------------------------------
-function playerOneIoriStanding()
-	local state = rb(iorip1_state_base)
+function playerOneStanding()
+	local state = rb(p1_state_base)
 	return state == 0 or state == 5 or state == 4
 end
 
-function playerOneIoriPose()
-	return rb(iorip1_state_base)
+function playerOnePose()
+	return rb(p1_state_base)
 end
 
-function playerTwoIoriStanding()
+function playerTwoStanding()
 	local state = rb(p2_state_base)
 	return state == 0 or state == 5 or state == 4
 end
 
-function playerTwoIoriPose()
+function playerTwoPose()
 	return rb(p2_state_base)
 end
 
@@ -174,6 +174,7 @@ function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
+	print(playerTwoPose())
 
 	
 	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
@@ -203,10 +204,10 @@ function Run() -- runs every frame
 		if playerTwoInHitstun() then
 			p2_hitstun_frames = p2_hitstun_frames + 1
 		end
-		if not playerOneIoriStanding() then
+		if not playerOneStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
-		if not playerTwoInHitstun() and playerOneIoriStanding() then
+		if not playerTwoInHitstun() and playerOneStanding() then
 			local advantage = p2_hitstun_frames - p1_recovery_frames
 			print("Frame Advantage: " .. advantage)
 			measuring_advantage = false
@@ -220,12 +221,12 @@ function Run() -- runs every frame
 			p2_blockstun_frames = p2_blockstun_frames + 1
 			playerTwoBlockStand()
 		end
-		if not playerOneIoriStanding() then
+		if not playerOneStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
 
-		if not p2Blockstun() and playerOneIoriStanding() then
-			local advantage = p2_blockstun_frames - p1_recovery_frames + 1
+		if not p2Blockstun() and playerOneStanding() then
+			local advantage = p2_blockstun_frames - p1_recovery_frames
 			print("Block Frame Advantage: " .. advantage)
 
 			measuring_block_advantage = false
