@@ -26,6 +26,10 @@ local prev_p2_stun = 0
 local stun_before_hit = 0
 local stun_logged = false
 
+local prev_p2_guard = 0
+local guard_before_hit = 0
+local guard_logged = false
+
 local p1health = {0x2FE91D, 0x2FEA1D, 0x2FEB1D}
 local p2health = {0x2FED1D, 0x2FEE1D, 0x2FEF1D}
 
@@ -46,6 +50,7 @@ local p2_state_base = 0x101C57
 local p2block = 0x101bdd
 
 local p2stun = 0x2FED21
+local p2Guard = 0x2FED25
 
 translationtable = {
 	"left",
@@ -108,11 +113,6 @@ function playerTwoInHitstun()
 	return rb(p1combocounter)~=0
 end
 
-function p2Blockstun()
-	local state = rb(p2_state_base)
-	return state == 11 or state == 12
-end
-
 function readPlayerOneHealth()
 	return rb(p1health[p1char])
 end
@@ -171,12 +171,25 @@ function playerTwoPose()
 	return rb(p2_state_base)
 end
 
+function p2Blockstun()
+	local state = rb(p2_state_base)
+	return state == 11 or state == 12
+end
+
+function p2Blockstunpose()
+	return rb(p2block)
+end
+
 function playerTwoBlockStand()
 	wb(p2_state_base, 2)
 end
 
 function playerTwoStun()
 	return rb(p2stun)
+end
+
+function playerTwoGuard()
+	return rb(p2Guard)
 end
 ------------------------------------
 
@@ -187,6 +200,7 @@ function Run() -- runs every frame
 	p2char = rb(p2char_a)+1
 
 	current_stun = playerTwoStun()
+	current_guard = playerTwoGuard()
 	
 	-- Detectar input para iniciar medición (cualquiera de A, B, C, D)
 	local inputs = joypad.get()
@@ -207,6 +221,8 @@ function Run() -- runs every frame
 	end
 
 	if p2Blockstun() and not was_in_blockstun then
+		guard_before_hit = playerTwoGuard()
+		guard_logged = false
 		measuring_block_advantage = true
 		p2_blockstun_frames = 0
 		p1_recovery_frames = 0
@@ -256,6 +272,7 @@ function Run() -- runs every frame
 		was_in_hitstun = playerTwoInHitstun()
 	end
 
+	-- Calcular daño de stun
 	if playerTwoInHitstun() and not stun_logged then
 		if current_stun < stun_before_hit then
 			local stun_loss = stun_before_hit - current_stun
@@ -266,6 +283,19 @@ function Run() -- runs every frame
 				current_stun
 			))
 			stun_logged = true
+		end
+	end
+	-- Calcular daño de guardia
+	if p2Blockstunpose() and not guard_logged then
+		if current_guard < guard_before_hit then
+			local guard_loss = guard_before_hit - current_guard
+			print(string.format(
+				"Guard Damage: -%d (from %d to %d)",
+				guard_loss,
+				guard_before_hit,
+				current_guard
+			))
+			guard_logged = true
 		end
 	end
 	was_in_blockstun = p2Blockstun()
