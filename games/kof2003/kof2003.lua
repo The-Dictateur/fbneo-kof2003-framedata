@@ -174,7 +174,7 @@ end
 
 function p2Blockstun()
 	local state = rb(p2_state_base)
-	return state == 21 or state == 22 or state == 24 or state == 27 or state == 28
+	return state == 21 or state == 22 or state == 24 or state == 27 or state == 28 or state == 217 or state == 218 or state == 223 or state == 224
 end
 
 function p2Blockstunpose()
@@ -254,18 +254,11 @@ function Run() -- runs every frame
 		if not playerOneStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
-
-		local pose = playerTwoPose()
-		if pose == 27 or pose == 28 then
-			bonus = true
-		end
 		
 
 		if not p2Blockstun() and playerOneStanding() then
 			local advantage = p2_blockstun_frames - p1_recovery_frames
-			if bonus then
-				advantage = advantage + 1
-			end
+			advantage = advantage + 1 -- Ajuste para KOF2003
 			print("Block Frame Advantage: " .. advantage)
 			bonus = false
 			measuring_block_advantage = false
