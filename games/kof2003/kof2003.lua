@@ -53,6 +53,9 @@ local p2block = 0x101bdd
 local p2stun = 0x2FED21
 local p2Guard = 0x2FED25
 
+local startupframes = 0
+local advframes = 0
+
 translationtable = {
 	"left",
 	"right",
@@ -174,7 +177,7 @@ end
 
 function p2Blockstun()
 	local state = rb(p2_state_base)
-	return state == 21 or state == 22 or state == 24 or state == 27 or state == 28 or state == 217 or state == 218 or state == 223 or state == 224
+	return state == 217 or state == 218 or state == 223 or state == 224
 end
 
 function p2Blockstunpose()
@@ -182,7 +185,7 @@ function p2Blockstunpose()
 end
 
 function playerTwoBlockStand()
-	wb(p2_state_base, 2)
+	wb(p2_state_base, 0)
 end
 
 function playerTwoStun()
@@ -199,7 +202,22 @@ function Run() -- runs every frame
 	infiniteTime()
 	p1char = rb(p1char_a)+1
 	p2char = rb(p2char_a)+1
-	print (playerTwoPose())
+
+	-- Startup display
+	gui.text(85, 40, "START", "yellow")
+	gui.text(93, 50, startupframes, "yellow")
+
+	-- Advantage display
+	gui.text(119, 50, advframes, "yellow")
+	gui.text(115, 40, "ADV", "yellow")
+
+	-- Stun display
+	gui.text(180, 40, "Stun:", "yellow")
+	gui.text(210, 40, playerTwoStun(), "yellow")
+
+	-- Guard display
+	gui.text(180, 50, "Guard:", "yellow")
+	gui.text(210, 50, playerTwoGuard(), "yellow")
 
 	current_stun = playerTwoStun()
 	current_guard = playerTwoGuard()
@@ -239,6 +257,7 @@ function Run() -- runs every frame
 		end
 		if not playerTwoInHitstun() and playerOneStanding() then
 			local advantage = p2_hitstun_frames - p1_recovery_frames
+			advframes = advantage
 			print("Frame Advantage: " .. advantage)
 			measuring_advantage = false
 			pose5_detected = false
@@ -254,13 +273,12 @@ function Run() -- runs every frame
 		if not playerOneStanding() then
 			p1_recovery_frames = p1_recovery_frames + 1
 		end
-		
 
 		if not p2Blockstun() and playerOneStanding() then
 			local advantage = p2_blockstun_frames - p1_recovery_frames
 			advantage = advantage + 1 -- Ajuste para KOF2003
+			advframes = advantage
 			print("Block Frame Advantage: " .. advantage)
-			bonus = false
 			measuring_block_advantage = false
 		end
 	end
@@ -270,6 +288,7 @@ function Run() -- runs every frame
 		startup_frames = startup_frames + 1
 		if playerTwoInHitstun() and not was_in_hitstun then
 			startup_frames = startup_frames - 4
+			startupframes = startup_frames
 			print("Startup: " .. startup_frames)
 		end
 		was_in_hitstun = playerTwoInHitstun()
