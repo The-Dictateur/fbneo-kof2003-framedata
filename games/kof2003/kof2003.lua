@@ -56,6 +56,9 @@ local p2Guard = 0x2FED25
 local startupframes = 0
 local advframes = 0
 
+local STdmg = 0
+local GDdmg = 0
+
 translationtable = {
 	"left",
 	"right",
@@ -219,6 +222,14 @@ function Run() -- runs every frame
 	gui.text(180, 50, "Guard:", "yellow")
 	gui.text(210, 50, playerTwoGuard(), "yellow")
 
+	-- Stun Dmg
+	gui.text(134, 70, "ST Dmg:", "yellow")
+	gui.text(166, 70, STdmg, "yellow")
+
+	-- Guard Dmg
+	gui.text(134, 80, "GD Dmg:", "yellow")	
+	gui.text(166, 80, GDdmg, "yellow")
+
 	current_stun = playerTwoStun()
 	current_guard = playerTwoGuard()
 	
@@ -298,6 +309,7 @@ function Run() -- runs every frame
 	if playerTwoInHitstun() and not stun_logged then
 		if current_stun < stun_before_hit then
 			local stun_loss = stun_before_hit - current_stun
+			STdmg = stun_loss
 			print(string.format(
 				"Stun Damage: -%d (from %d to %d)",
 				stun_loss,
@@ -311,6 +323,7 @@ function Run() -- runs every frame
 	if p2Blockstunpose() and not guard_logged then
 		if current_guard < guard_before_hit then
 			local guard_loss = guard_before_hit - current_guard
+			GDdmg = guard_loss
 			print(string.format(
 				"Guard Damage: -%d (from %d to %d)",
 				guard_loss,
