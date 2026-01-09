@@ -37,7 +37,7 @@ This fork adds **advanced framedata visualization**, including:
 
 ## 🕹️ How to Use
 
-1. **Clone** or **Download** the tool: 
+1. **Clone** or **Download** the tool: https://github.com/The-Dictateur/fbneo-kof2003-framedata/releases/download/1.0/fbneo-kof2003-framedata-master.zip
 2. Launch **Fightcade**
 3. Start **The King of Fighters 2003** in **Training**
 4. Navigate to: **Game** > **Lua Scripting** > **New Lua Script Window**
