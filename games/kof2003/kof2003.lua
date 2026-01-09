@@ -269,7 +269,7 @@ function Run() -- runs every frame
 		if not playerTwoInHitstun() and playerOneStanding() then
 			local advantage = p2_hitstun_frames - p1_recovery_frames
 			advframes = advantage
-			print("Frame Advantage: " .. advantage)
+			--print("Frame Advantage: " .. advantage)
 			measuring_advantage = false
 			pose5_detected = false
 			pose50_detected = false
@@ -289,7 +289,7 @@ function Run() -- runs every frame
 			local advantage = p2_blockstun_frames - p1_recovery_frames
 			advantage = advantage + 1 -- Ajuste para KOF2003
 			advframes = advantage
-			print("Block Frame Advantage: " .. advantage)
+			--print("Block Frame Advantage: " .. advantage)
 			measuring_block_advantage = false
 		end
 	end
@@ -300,7 +300,7 @@ function Run() -- runs every frame
 		if playerTwoInHitstun() and not was_in_hitstun then
 			startup_frames = startup_frames - 4
 			startupframes = startup_frames
-			print("Startup: " .. startup_frames)
+			--print("Startup: " .. startup_frames)
 		end
 		was_in_hitstun = playerTwoInHitstun()
 	end
@@ -310,12 +310,12 @@ function Run() -- runs every frame
 		if current_stun < stun_before_hit then
 			local stun_loss = stun_before_hit - current_stun
 			STdmg = stun_loss
-			print(string.format(
-				"Stun Damage: -%d (from %d to %d)",
-				stun_loss,
-				stun_before_hit,
-				current_stun
-			))
+			--print(string.format(
+			--	"Stun Damage: -%d (from %d to %d)",
+			--	stun_loss,
+			--	stun_before_hit,
+			--	current_stun
+			--))
 			stun_logged = true
 		end
 	end
@@ -324,12 +324,12 @@ function Run() -- runs every frame
 		if current_guard < guard_before_hit then
 			local guard_loss = guard_before_hit - current_guard
 			GDdmg = guard_loss
-			print(string.format(
-				"Guard Damage: -%d (from %d to %d)",
-				guard_loss,
-				guard_before_hit,
-				current_guard
-			))
+			--print(string.format(
+			--	"Guard Damage: -%d (from %d to %d)",
+			--	guard_loss,
+			--	guard_before_hit,
+			--	current_guard
+			--))
 			guard_logged = true
 		end
 	end
