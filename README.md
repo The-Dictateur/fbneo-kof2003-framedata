@@ -1,4 +1,4 @@
-﻿# fbneo-training-mode
+﻿# fbneo-kof2003-framedata
 A simple training mode for multiple games on the fbneo platform
 
 Written to allow easy incorporation of more games
