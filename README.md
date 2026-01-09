@@ -43,3 +43,4 @@ This fork adds **advanced framedata visualization**, including:
 4. Navigate to: **Game** > **Lua Scripting** > **New Lua Script Window**
 5. Brwse the file **fbneo-training-mode.lua**
 6. Run the script
+7. Play against Kyo
